@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo AquaMonitor - Demo Funcional</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 50%, #42a5f5 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .demo-controls {
+            background: #e3f2fd;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .demo-controls h3 {
+            margin: 0 0 15px 0;
+            color: #1976d2;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #1976d2;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #0d47a1;
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: #4caf50;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+        
+        .device-section {
+            text-align: center;
+        }
+        
+        .device-mockup {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto 30px;
+            background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid #333;
+        }
+        
+        .screen {
+            width: 250px;
+            height: 320px;
+            background: #000;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .screen-content {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            height: 100%;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .logo-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #42a5f5;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .consumption-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .consumption-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .consumption-unit {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin: 0;
+        }
+        
+        .status-indicators {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .indicator {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .indicator-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .green { background: #4caf50; }
+        .yellow { background: #ff9800; }
+        .red { background: #f44336; }
+        
+        .indicator-text {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 65%;
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .app-section {
+            padding-left: 20px;
+        }
+        
+        .app-mockup {
+            width: 250px;
+            height: 450px;
+            background: #000;
+            border-radius: 25px;
+            margin: 0 auto 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            border: 6px solid #333;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .app-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1976d2;
+        }
+        
+        .app-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .notification-dot {
+            width: 12px;
+            height: 12px;
+            background: #f44336;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .metric-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 0;
+        }
+        
+        .metric-label {
+            font-size: 0.8em;
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+        
+        .chart-area {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1em;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+        
+        .mini-chart {
+            height: 60px;
+            background: linear-gradient(90deg, #e3f2fd 0%, #1976d2 50%, #42a5f5 100%);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: end;
+            height: 100%;
+            padding: 5px;
+            gap: 2px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: #1976d2;
+            border-radius: 2px 2px 0 0;
+            transition: height 0.5s ease;
+        }
+        
+        .features-section {
+            grid-column: span 2;
+            margin-top: 20px;
+        }
+        
+        .features-title {
+            text-align: center;
+            font-size: 2em;
+            color: #1976d2;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #1976d2;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            color: #666;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .alert-banner {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .alert-banner.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .leak-alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .leak-alert.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .app-section {
+                padding-left: 0;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .control-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+        overflow-x: hidden;
+    }
+
+    .container {
+        border-radius: 10px;
+    }
+
+    .device-mockup,
+    .app-mockup {
+        width: 100%;
+        height: auto;
+        max-width: 280px;
+    }
+
+    .screen,
+    .app-screen {
+        width: 100%;
+        height: auto;
+    }
+
+    .screen-content {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .header p {
+        font-size: 1em;
+    }
+
+    .control-btn {
+        width: 100%;
+        max-width: 250px;
+        font-size: 1em;
+    }
+
+    .metric-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .features-title {
+        font-size: 1.5em;
+    }
+
+    .feature-card {
+        padding: 15px;
+    }
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 AQUAMONITOR</h1>
+            <p>Sistema Inteligente de Monitoreo de Agua para Hogares de Lima Metropolitana</p>
+        </div>
+        
+        <div class="demo-controls">
+            <h3>🎮 Panel de Control - Demo Interactivo</h3>
+            <div class="control-group">
+                <button class="control-btn" onclick="simulateNormalUsage()">Uso Normal</button>
+                <button class="control-btn" onclick="simulateHighUsage()">Uso Excesivo</button>
+                <button class="control-btn" onclick="simulateLeak()">Detectar Fuga</button>
+                <button class="control-btn" onclick="showSavingTips()">Ver Tips</button>
+                <button class="control-btn" onclick="resetDemo()">Reset Demo</button>
+            </div>
+        </div>
+
+        <div class="alert-banner" id="alertBanner">
+            <strong>⚠️ Alerta de Consumo:</strong> <span id="alertMessage"></span>
+        </div>
+        
+        <div class="main-content">
+            <div class="device-section">
+                <h2 style="color: #1976d2; text-align: center; margin-bottom: 20px;">📱 Medidor Inteligente</h2>
+                <div class="device-mockup">
+                    <div class="screen">
+                        <div class="screen-content">
+                            <div class="logo-area">
+                                <div class="logo" id="deviceLogo">💧</div>
+                                <div style="font-size: 1.1em; font-weight: bold;">AquaMonitor</div>
+                            </div>
+                            
+                            <div class="consumption-display">
+                                <p class="consumption-number" id="liveConsumption">100</p>
+                                <p class="consumption-unit">Litros hoy</p>
+                            </div>
+                            
+                            <div class="status-indicators">
+                                <div class="indicator">
+                                    <div class="indicator-icon green" id="goalIcon">✓</div>
+                                    <div class="indicator-text">Meta</div>
+                                </div>
+                                <div class="indicator">
+                                    <div class="indicator-icon green" id="alertIcon">✓</div>
+                                    <div class="indicator-text">Estado</div>
+                                </div>
+                                <div class="indicator">
+                                    <div class="indicator-icon green">📶</div>
+                                    <div class="indicator-text">WiFi</div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-section">
+                                <div class="progress-label" id="progressLabel">Progreso diario (100% de meta OMS)</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressBar"></div>
+                                </div>
+                            </div>
+
+                            <div class="leak-alert" id="leakAlert">
+                                <strong>🚨 Posible fuga detectada</strong><br>
+                                Flujo constante de 0.5 L/min durante 2 horas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; color: #666; font-size: 0.9em; margin-top: 10px;">
+                    <strong>Basado en datos reales de Lima:</strong><br>
+                    • Meta OMS: 100L/persona/día<br>
+                    • Promedio Lima: 180L/persona/día<br>
+                    • Desperdicio actual: 35% del agua potable<br>
+                    • Ahorro potencial: 80L/día
+                </p>
+            </div>
+            
+            <div class="app-section">
+                <h2 style="color: #1976d2; text-align: center; margin-bottom: 20px;">📱 App AquaLima</h2>
+                <div class="app-mockup">
+                    <div class="app-screen">
+                        <div class="app-header">
+                            <div class="app-title">AquaLima</div>
+                            <div class="notification-dot" id="notificationDot"></div>
+                        </div>
+                        
+                        <div class="metric-cards">
+                            <div class="metric-card">
+                                <p class="metric-value" id="appConsumption">100</p>
+                                <p class="metric-label">Litros hoy</p>
+                            </div>
+                            <div class="metric-card">
+                                <p class="metric-value" id="monthlySavings">S/ 25</p>
+                                <p class="metric-label">Ahorro mes</p>
+                            </div>
+                            <div class="metric-card">
+                                <p class="metric-value" id="familyRanking">1°</p>
+                                <p class="metric-label">Ranking</p>
+                            </div>
+                            <div class="metric-card">
+                                <p class="metric-value" id="ecoLevel">🌱</p>
+                                <p class="metric-label">Eco-Hogar</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-area">
+                            <p class="chart-title">📊 Consumo Semanal</p>
+                            <div class="mini-chart">
+                                <div class="chart-bars" id="chartBars"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <p style="margin: 0; font-size: 0.9em; color: #333;"><strong>💡 Tip personalizado:</strong></p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #666;" id="dailyTip">Basado en tu consumo, podrías ahorrar 12L cerrando el grifo al cepillarte</p>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; color: #666; font-size: 0.9em; margin-top: 10px;">
+                    <strong>Impacto esperado:</strong><br>
+                    • Reducción 30-40% del consumo<br>
+                    • ROI en 6 meses<br>
+                    • Ahorro S/ 300/año por familia<br>
+                    • Detección temprana de fugas
+                </p>
+            </div>
+            
+            <div class="features-section">
+                <h2 class="features-title">🔧 Solución para Lima Metropolitana</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Datos Reales de Lima</div>
+                        <div class="feature-description">
+                            Basado en estudios de SEDAPAL y ANA. Lima consume 180L/persona/día vs 100L recomendados por la OMS
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-title">Meta de Ahorro</div>
+                        <div class="feature-description">
+                            Reducir el 35% de desperdicio actual, ahorrando 43 millones de m³ anuales del déficit hídrico
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-title">Detección Inteligente</div>
+                        <div class="feature-description">
+                            Identifica fugas que representan pérdidas de hasta 180L/día por hogar según estudios locales
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-title">Gamificación Local</div>
+                        <div class="feature-description">
+                            Sistema de puntos adaptado a la realidad limeña, motivando el cambio de hábitos del 76% de familias dispuestas
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+<script>
+    let currentConsumption = 100;
+    let dailyGoal = 100;
+    let isLeakDetected = false;
+    let chartData = [80, 95, 105, 120, 110, 100, 100];
+    let currentTipIndex = 0;
+
+    const educationalTips = [
+        "Cerrar el grifo al cepillarte ahorra 12L diarios.",
+        "Una fuga pequeña puede desperdiciar 180L al día.",
+        "La OMS recomienda solo 100L por persona al día.",
+        "Reparar fugas puede ahorrar hasta S/ 300 al año.",
+        "El 35% del agua en Lima se desperdicia por mal uso.",
+        "Ahorrar agua ayuda a preservar el río Rímac.",
+        "Usa aireadores en los grifos para reducir consumo.",
+        "Reutiliza el agua de lavar verduras para las plantas."
+    ];
+
+    function updateConsumption(newConsumption) {
+        currentConsumption = newConsumption;
+        document.getElementById('liveConsumption').textContent = currentConsumption;
+        document.getElementById('appConsumption').textContent = currentConsumption;
+
+        const progress = Math.min((currentConsumption / dailyGoal) * 100, 100);
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressLabel').textContent = `Progreso diario (${Math.round(progress)}% de meta OMS)`;
+
+        updateStatusIndicators();
+        updateSavingsMetrics();
+        updateChart();
+    }
+
+    function updateStatusIndicators() {
+        const goalIcon = document.getElementById('goalIcon');
+        const alertIcon = document.getElementById('alertIcon');
+        const progressBar = document.getElementById('progressBar');
+
+        if (currentConsumption <= dailyGoal) {
+            goalIcon.className = 'indicator-icon green';
+            goalIcon.textContent = '✓';
+            alertIcon.className = 'indicator-icon green';
+            alertIcon.textContent = '✓';
+            progressBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+            hideAlert();
+        } else if (currentConsumption <= dailyGoal * 1.4) {
+            goalIcon.className = 'indicator-icon yellow';
+            goalIcon.textContent = '⚠';
+            alertIcon.className = 'indicator-icon yellow';
+            alertIcon.textContent = '⚠';
+            progressBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+            showAlert(`Estás usando ${currentConsumption - dailyGoal}L más que la meta diaria recomendada`);
+        } else {
+            goalIcon.className = 'indicator-icon red';
+            goalIcon.textContent = '✗';
+            alertIcon.className = 'indicator-icon red';
+            alertIcon.textContent = '⚠';
+            progressBar.style.background = 'linear-gradient(90deg, #f44336, #e53935)';
+            showAlert(`Consumo excesivo: ${currentConsumption}L (${Math.round(((currentConsumption - dailyGoal) / dailyGoal) * 100)}% sobre la meta)`);
+        }
+    }
+
+    function showAlert(message) {
+        document.getElementById('alertMessage').textContent = message;
+        document.getElementById('alertBanner').classList.add('show');
+    }
+
+    function hideAlert() {
+        document.getElementById('alertBanner').classList.remove('show');
+    }
+
+    function updateSavingsMetrics() {
+        const limaAverage = 180;
+        const dailySavings = Math.max(0, limaAverage - currentConsumption);
+        const monthlySavingsAmount = Math.round(dailySavings * 30 * 0.1);
+        document.getElementById('monthlySavings').textContent = `S/ ${monthlySavingsAmount}`;
+
+        const ranking = document.getElementById('familyRanking');
+        const eco = document.getElementById('ecoLevel');
+
+        if (currentConsumption <= dailyGoal) {
+            ranking.textContent = '1°';
+            eco.textContent = '🏆';
+        } else if (currentConsumption <= dailyGoal * 1.2) {
+            ranking.textContent = '2°';
+            eco.textContent = '🌱';
+        } else if (currentConsumption <= dailyGoal * 1.4) {
+            ranking.textContent = '3°';
+            eco.textContent = '🌿';
+        } else {
+            ranking.textContent = '5°';
+            eco.textContent = '📈';
+        }
+    }
+
+    function updateChart() {
+        const chartBars = document.getElementById('chartBars');
+        chartData[6] = currentConsumption;
+        chartBars.innerHTML = '';
+
+        chartData.forEach(value => {
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            bar.style.height = `${(value / 200) * 100}%`;
+
+            if (value <= dailyGoal) {
+                bar.style.background = '#4caf50';
+            } else if (value <= dailyGoal * 1.4) {
+                bar.style.background = '#ff9800';
+            } else {
+                bar.style.background = '#f44336';
+            }
+
+            chartBars.appendChild(bar);
+        });
+    }
+
+    function simulateNormalUsage() {
+        const randomUsage = 90 + Math.floor(Math.random() * 20);
+        updateConsumption(randomUsage);
+        document.getElementById('leakAlert').classList.remove('show');
+        resetLogo();
+    }
+
+    function simulateHighUsage() {
+        const randomUsage = 150 + Math.floor(Math.random() * 50);
+        updateConsumption(randomUsage);
+        document.getElementById('leakAlert').classList.remove('show');
+        resetLogo();
+    }
+
+    function simulateLeak() {
+        const randomUsage = 180 + Math.floor(Math.random() * 30);
+        updateConsumption(randomUsage);
+        document.getElementById('leakAlert').classList.add('show');
+
+        const logo = document.getElementById('deviceLogo');
+        logo.style.background = '#f44336';
+        logo.style.animation = 'blink 0.5s infinite';
+    }
+
+    function resetDemo() {
+        updateConsumption(100);
+        document.getElementById('leakAlert').classList.remove('show');
+        document.getElementById('dailyTip').textContent = 'Basado en tu consumo, podrías ahorrar 12L cerrando el grifo al cepillarte';
+        resetLogo();
+        hideAlert();
+    }
+
+    function resetLogo() {
+        const logo = document.getElementById('deviceLogo');
+        logo.style.background = '#42a5f5';
+        logo.style.animation = 'pulse 2s infinite';
+    }
+
+    function showSavingTips() {
+    window.open("https://www.fundacionaquae.org/wiki/ahorrar-agua-ahora-escasea/", "_blank");
+}
+</script>
